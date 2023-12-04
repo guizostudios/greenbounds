@@ -8,57 +8,145 @@
 			{
 				"inputs": [
 					{
-						"internalType": "address payable",
-						"name": "_owner",
+						"internalType": "string",
+						"name": "_nftName",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "_nftSymbol",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "_marketplaceNftName",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "_marketplaceNftSymbol",
+						"type": "string"
+					},
+					{
+						"internalType": "address",
+						"name": "_initialOwner",
 						"type": "address"
-					},
-					{
-						"internalType": "address payable",
-						"name": "_taker",
-						"type": "address"
-					},
-					{
-						"internalType": "address payable",
-						"name": "_fee",
-						"type": "address"
-					},
-					{
-						"internalType": "uint256",
-						"name": "_securityDeposit",
-						"type": "uint256"
-					},
-					{
-						"internalType": "uint256",
-						"name": "_rentAmount",
-						"type": "uint256"
-					},
-					{
-						"internalType": "uint256",
-						"name": "_endDate",
-						"type": "uint256"
-					},
-					{
-						"internalType": "uint256",
-						"name": "_daysForPayment",
-						"type": "uint256"
 					}
 				],
 				"stateMutability": "nonpayable",
 				"type": "constructor"
 			},
 			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "owner",
+						"type": "address"
+					}
+				],
+				"name": "OwnableInvalidOwner",
+				"type": "error"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "account",
+						"type": "address"
+					}
+				],
+				"name": "OwnableUnauthorizedAccount",
+				"type": "error"
+			},
+			{
 				"anonymous": false,
 				"inputs": [
 					{
 						"indexed": true,
 						"internalType": "address",
-						"name": "contractAddress",
+						"name": "borrower",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "amount",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "startDate",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "endDate",
+						"type": "uint256"
+					}
+				],
+				"name": "Borrow",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "kfcAddress",
+						"type": "address"
+					}
+				],
+				"name": "KFCApproved",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "previousOwner",
 						"type": "address"
 					},
 					{
 						"indexed": true,
 						"internalType": "address",
-						"name": "from",
+						"name": "newOwner",
+						"type": "address"
+					}
+				],
+				"name": "OwnershipTransferred",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "buyer",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "tokenId",
+						"type": "uint256"
+					}
+				],
+				"name": "RefundNFT",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "borrower",
 						"type": "address"
 					},
 					{
@@ -68,7 +156,7 @@
 						"type": "uint256"
 					}
 				],
-				"name": "Deposit",
+				"name": "Repay",
 				"type": "event"
 			},
 			{
@@ -77,26 +165,41 @@
 					{
 						"indexed": true,
 						"internalType": "address",
-						"name": "takerDeposit",
+						"name": "borrower",
 						"type": "address"
 					},
 					{
 						"indexed": false,
 						"internalType": "uint256",
-						"name": "amount",
+						"name": "tokenId",
 						"type": "uint256"
 					}
 				],
-				"name": "FundsDeposited",
+				"name": "WithdrawCollateral",
 				"type": "event"
 			},
 			{
-				"stateMutability": "payable",
-				"type": "fallback"
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "_kfcAddress",
+						"type": "address"
+					}
+				],
+				"name": "approveKFC",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
 			},
 			{
-				"inputs": [],
-				"name": "daysDelay",
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"name": "borrowBalances",
 				"outputs": [
 					{
 						"internalType": "uint256",
@@ -108,8 +211,50 @@
 				"type": "function"
 			},
 			{
-				"inputs": [],
-				"name": "daysForPayment",
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "_amount",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_startDate",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_endDate",
+						"type": "uint256"
+					}
+				],
+				"name": "borrowFunds",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "_listingId",
+						"type": "uint256"
+					}
+				],
+				"name": "cancelNFTListing",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"name": "contractEndDates",
 				"outputs": [
 					{
 						"internalType": "uint256",
@@ -124,187 +269,11 @@
 				"inputs": [
 					{
 						"internalType": "address",
-						"name": "_taker",
-						"type": "address"
-					}
-				],
-				"name": "deposit",
-				"outputs": [],
-				"stateMutability": "payable",
-				"type": "function"
-			},
-			{
-				"inputs": [],
-				"name": "durationMonths",
-				"outputs": [
-					{
-						"internalType": "uint256",
-						"name": "",
-						"type": "uint256"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"inputs": [],
-				"name": "endDate",
-				"outputs": [
-					{
-						"internalType": "uint256",
-						"name": "",
-						"type": "uint256"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"inputs": [],
-				"name": "rentAmount",
-				"outputs": [
-					{
-						"internalType": "uint256",
-						"name": "",
-						"type": "uint256"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"inputs": [],
-				"name": "returnDaysForPayment",
-				"outputs": [
-					{
-						"internalType": "uint256",
-						"name": "",
-						"type": "uint256"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"inputs": [],
-				"name": "returnEndDate",
-				"outputs": [
-					{
-						"internalType": "uint256",
-						"name": "",
-						"type": "uint256"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"inputs": [],
-				"name": "returnOwner",
-				"outputs": [
-					{
-						"internalType": "address",
 						"name": "",
 						"type": "address"
 					}
 				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"inputs": [],
-				"name": "returnRentAmount",
-				"outputs": [
-					{
-						"internalType": "uint256",
-						"name": "",
-						"type": "uint256"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"inputs": [],
-				"name": "returnSecurityDeposit",
-				"outputs": [
-					{
-						"internalType": "uint256",
-						"name": "",
-						"type": "uint256"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"inputs": [],
-				"name": "returnStartDate",
-				"outputs": [
-					{
-						"internalType": "uint256",
-						"name": "",
-						"type": "uint256"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"inputs": [],
-				"name": "returnTaker",
-				"outputs": [
-					{
-						"internalType": "address",
-						"name": "",
-						"type": "address"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"inputs": [],
-				"name": "returnTakerBalance",
-				"outputs": [
-					{
-						"internalType": "uint256",
-						"name": "",
-						"type": "uint256"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"inputs": [],
-				"name": "securityDeposit",
-				"outputs": [
-					{
-						"internalType": "uint256",
-						"name": "",
-						"type": "uint256"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"inputs": [],
-				"name": "startDate",
-				"outputs": [
-					{
-						"internalType": "uint256",
-						"name": "",
-						"type": "uint256"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"inputs": [],
-				"name": "takerBalance",
+				"name": "contractStartDates",
 				"outputs": [
 					{
 						"internalType": "uint256",
@@ -319,23 +288,216 @@
 				"inputs": [
 					{
 						"internalType": "address",
-						"name": "_user",
+						"name": "",
 						"type": "address"
 					}
 				],
-				"name": "withdraw",
+				"name": "kfcVerification",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "marketplaceContract",
+				"outputs": [
+					{
+						"internalType": "contract GBMarketplace",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "nftContract",
+				"outputs": [
+					{
+						"internalType": "contract GBERC721",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "owner",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "_listingId",
+						"type": "uint256"
+					}
+				],
+				"name": "purchaseNFT",
 				"outputs": [],
 				"stateMutability": "payable",
 				"type": "function"
 			},
 			{
-				"stateMutability": "payable",
-				"type": "receive"
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "_listingId",
+						"type": "uint256"
+					},
+					{
+						"internalType": "address",
+						"name": "_buyer",
+						"type": "address"
+					}
+				],
+				"name": "refundNFTToBuyer",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "renounceOwnership",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "repayFunds",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "_amount",
+						"type": "uint256"
+					},
+					{
+						"internalType": "address",
+						"name": "_ERC20Address",
+						"type": "address"
+					}
+				],
+				"name": "transferOrWithdraw",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "newOwner",
+						"type": "address"
+					}
+				],
+				"name": "transferOwnership",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "_listingId",
+						"type": "uint256"
+					},
+					{
+						"internalType": "address",
+						"name": "_buyer",
+						"type": "address"
+					}
+				],
+				"name": "updateNFT",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "_tokenId",
+						"type": "uint256"
+					},
+					{
+						"internalType": "string",
+						"name": "_status",
+						"type": "string"
+					},
+					{
+						"internalType": "bool",
+						"name": "_active",
+						"type": "bool"
+					}
+				],
+				"name": "updateNFTData",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "_tokenId",
+						"type": "uint256"
+					}
+				],
+				"name": "withdrawCollateral",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
 			}
 		],
 		"devdoc": {
+			"errors": {
+				"OwnableInvalidOwner(address)": [
+					{
+						"details": "The owner is not a valid owner account. (eg. `address(0)`)"
+					}
+				],
+				"OwnableUnauthorizedAccount(address)": [
+					{
+						"details": "The caller account is not authorized to perform an operation."
+					}
+				]
+			},
 			"kind": "dev",
-			"methods": {},
+			"methods": {
+				"owner()": {
+					"details": "Returns the address of the current owner."
+				},
+				"renounceOwnership()": {
+					"details": "Leaves the contract without owner. It will not be possible to call `onlyOwner` functions. Can only be called by the current owner. NOTE: Renouncing ownership will leave the contract without an owner, thereby disabling any functionality that is only available to the owner."
+				},
+				"transferOwnership(address)": {
+					"details": "Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner."
+				}
+			},
 			"version": 1
 		},
 		"userdoc": {
@@ -354,8 +516,8 @@
 			"bytecodeHash": "ipfs"
 		},
 		"optimizer": {
-			"enabled": false,
-			"runs": 200
+			"enabled": true,
+			"runs": 1
 		},
 		"remappings": []
 	},
@@ -569,27 +731,27 @@
 			]
 		},
 		"contracts/GBContract.sol": {
-			"keccak256": "0x2ee1672b55450d015605938185654a2cb11ccb03b0c838134af0a9af9671e50e",
+			"keccak256": "0x5ca7221c1d0e7ce841926c07a4e054798745df0734a504597f5b6e3f2cb0faf7",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://b547532abaaba533609b73193634e996c33d8f063613029f0b676fceaa5f09d8",
-				"dweb:/ipfs/QmQfrHDm35eWJ1VjBfXwgMVuQfH8UHTYDwqtbwjo5ctZWJ"
+				"bzz-raw://a90fb32d437bb1163d8b3c57ef10c119f182040a09385a5c110c7f627a84cb80",
+				"dweb:/ipfs/QmV8jwqkvKGNUCdapsyXD3ZCBfmZ5s8X9UonzkoStJhkqz"
 			]
 		},
 		"contracts/GBERC721.sol": {
-			"keccak256": "0x01ef33454df2d190566a07a6fc140f947dd45ef0a5015e396e0e7ef543d798a1",
+			"keccak256": "0x4f9b526c2662e4e39f596508680c3c93745448d1869b1cef3fbc4d86c8743f8c",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://cbcd8871a38d166f8ee6d4b2fadbc71ca80cfd789f302ee46795dc7301869d56",
-				"dweb:/ipfs/Qmb6LVDZkosiNNMkfS94CcJ8yPT8dm96TH9B4MevpkbEdg"
+				"bzz-raw://c403caf445f22c6f1d11dc5beba0ce52452f80b6da08613eede38b1a72a1569b",
+				"dweb:/ipfs/QmZn3znNDJu4SDkAPfRV8S1JSuA3VZRv4KXVsjPKcuEfCX"
 			]
 		},
 		"contracts/Marketplace.sol": {
-			"keccak256": "0x96348994dae4a9818fc23596b3b388e614528f06c8d2451d64645b7a30d0f62b",
+			"keccak256": "0x08e4f7aae89c7e284e57589e2380fec2589df57d9df8419919585fe9130f5e2e",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://4915cc13ab07ff6bcf67eae3a94c7152209113b2858d040627110d5b8c15af98",
-				"dweb:/ipfs/QmU5EsbXxVoZWvkj8UwxVeoS5suKqM7pmqoeUhKKaxKxpY"
+				"bzz-raw://3718982e07803f4ddbc1dd553d55199b54f9c59fac74144fe34b34b60f2310cc",
+				"dweb:/ipfs/QmYWHzskLYAKb7xgn52KFapKnXVvHjguPo5cbU11VvAVv4"
 			]
 		}
 	},

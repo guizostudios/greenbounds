@@ -13,16 +13,16 @@ contract GBContract is Ownable {
     GBERC721 public nftContract;
     GBMarketplace public marketplaceContract;
 
-    // KFC Verification
-    mapping(address => bool) public kfcVerification;
+    // KYC Verification
+    mapping(address => bool) public kycVerification;
 
     // Mapping to track borrow balances and contract dates
     mapping(address => uint256) public borrowBalances;
     mapping(address => uint256) public contractStartDates;
     mapping(address => uint256) public contractEndDates;
 
-    // Event to notify when KFC is approved
-    event KFCApproved(address indexed kfcAddress);
+    // Event to notify when KYC is approved
+    event KYCApproved(address indexed kycAddress);
 
     // Event to notify when funds are borrowed
     event Borrow(address indexed borrower, uint256 amount, uint256 startDate, uint256 endDate);
@@ -36,8 +36,8 @@ contract GBContract is Ownable {
     // Event to notify when NFT is refunded to buyer
     event RefundNFT(address indexed buyer, uint256 tokenId);
 
-    modifier onlyKFC() {
-        require(kfcVerification[msg.sender], "Not authorized. Only KFC can call this function.");
+    modifier onlyKYC() {
+        require(kycVerification[msg.sender], "Not authorized. Only approved customer can call this function.");
         _;
     }
 
@@ -60,10 +60,10 @@ contract GBContract is Ownable {
     }
 
     // Function to approve KFC address
-    function approveKFC(address _kfcAddress) external onlyOwner {
-        require(_kfcAddress != address(0), "Invalid KFC address");
-        kfcVerification[_kfcAddress] = true;
-        emit KFCApproved(_kfcAddress);
+    function approveKYC(address _kycAddress) external onlyOwner {
+        require(_kycAddress != address(0), "Invalid KYC address");
+        kycVerification[_kycAddress] = true;
+        emit KYCApproved(_kycAddress);
     }
 
 
@@ -116,7 +116,7 @@ contract GBContract is Ownable {
     }
 
     // Function to update NFT information
-    function updateNFT(uint256 _listingId, address _buyer) external onlyKFC {
+    function updateNFT(uint256 _listingId, address _buyer) external onlyKYC {
         marketplaceContract.updateNFT(nftContract, _listingId, _buyer);
     }
 
@@ -165,7 +165,7 @@ contract GBContract is Ownable {
     }
 
     // Function for the bank to withdraw collateral if NGOs fail to repay after contract expiration
-    function withdrawCollateral(uint256 _tokenId) external onlyKFC onlyAfterEndDate(msg.sender) {
+    function withdrawCollateral(uint256 _tokenId) external onlyKYC onlyAfterEndDate(msg.sender) {
         require(borrowBalances[msg.sender] > 0, "No active loan");
         require(nftContract.ownerOf(_tokenId) == address(this), "NFT not held as collateral");
 
@@ -179,7 +179,7 @@ contract GBContract is Ownable {
     }
 
     // Function for the bank to refund NFT to buyer if NGOs repay successfully
-    function refundNFTToBuyer(uint256 _listingId, address _buyer) external onlyKFC {
+    function refundNFTToBuyer(uint256 _listingId, address _buyer) external onlyKYC {
         require(borrowBalances[_buyer] == 0, "Buyer has an active loan");
         marketplaceContract.transferNFT(_listingId);
 
